@@ -16,7 +16,7 @@ const canvas = document.querySelector('canvas.webgl');
 
 // Sizes
 const sizes = {
-    width: window.innerWidth - 200,
+    width: window.innerWidth ,
     height: window.innerHeight 
 };
 
@@ -37,23 +37,51 @@ const scene = new THREE.Scene();
 
 
 // Object
-const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(60, 60),
-    new THREE.MeshBasicMaterial({color: 0xCFD2CF, side: THREE.DoubleSide} )
-)
-scene.add(mesh)
+function createFloor(){
+  const textures_floor = new THREE.TextureLoader().load('/textures/floor_tiles.jpg')
+  textures_floor.wrapS = textures_floor.wrapT = THREE.RepeatWrapping;
+  textures_floor.offset.set( 0, 0 );
+  textures_floor.repeat.set( 8, 8 );
 
-mesh.rotation.x = 1.57;
-mesh.position.y = -1.06;
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1000, 1000),
+    new THREE.MeshBasicMaterial( {map: textures_floor, side: THREE.DoubleSide}),
+  )
 
-gui.add(mesh.position,'y',-3,3,0.01);
+  mesh.rotation.x = 1.57;
+  mesh.position.y = -1.06;
+
+  gui.add(mesh.position,'y',-3,3,0.01);
+  var speed = 1
+  document.addEventListener("keydown", onDocumentKeyDown, false);
+  function onDocumentKeyDown(event) {
+      var keyCode = event.which
+      if (keyCode == 87) {
+        mesh.position.x -= speed
+      } else if (keyCode == 83) {
+        mesh.position.x += speed
+      }
+    };
+
+  return mesh
+}
+
+const floor = createFloor();
+scene.add(floor)
+
 
 function createWheels() {
   const geometry = new THREE.CylinderGeometry(7, 7, 35, 50);
-  const material = new THREE.MeshLambertMaterial({ color: 0x333333 });
-  const wheel = new THREE.Mesh(geometry, material);
+  //const material = new THREE.MeshLambertMaterial({ color: 0x333333 });
+  const materials = [
+    new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/wheel_side.jpg'), side: THREE.DoubleSide}),
+    new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/wheel.png'), side: THREE.DoubleSide}),
+    new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/wheel.png'), side: THREE.DoubleSide}),
+  ]    
+  const wheel = new THREE.Mesh(geometry, materials);
   return wheel;
 }
+
 
 
 function createCar() {
@@ -70,6 +98,22 @@ function createCar() {
   frontWheel.position.x = 18;
   frontWheel.rotation.x = 1.57;
   car.add(frontWheel);
+
+
+var speed = 0.1
+
+document.addEventListener("keydown", onDocumentKeyDown, false);
+function onDocumentKeyDown(event) {
+    var keyCode = event.which
+    if (keyCode == 87) {
+      frontWheel.rotation.y -= speed
+      backWheel.rotation.y -= speed
+    } else if (keyCode == 83) {
+      frontWheel.rotation.y += speed
+      backWheel.rotation.y += speed
+    }
+  };
+
 
 
   const main = new THREE.Mesh(
