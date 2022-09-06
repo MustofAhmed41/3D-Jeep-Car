@@ -36,6 +36,7 @@ window.addEventListener('mousemove', (event) =>
 const scene = new THREE.Scene();
 
 
+
 // Object
 function createFloor(){
   const textures_floor = new THREE.TextureLoader().load('/textures/floor_tiles.jpg')
@@ -52,15 +53,19 @@ function createFloor(){
   mesh.position.y = -1.06;
 
   gui.add(mesh.position,'y',-3,3,0.01);
-  var speed = 1
+
   document.addEventListener("keydown", onDocumentKeyDown, false);
   function onDocumentKeyDown(event) {
+
+      var speed = 1
+
       var keyCode = event.which
       if (keyCode == 87) {
         mesh.position.x -= speed
       } else if (keyCode == 83) {
         mesh.position.x += speed
-      }
+      }	
+
     };
     mesh.receiveShadow = true;
 
@@ -72,7 +77,7 @@ scene.add(floor)
 
 
 function createWheels() {
-  const geometry = new THREE.CylinderGeometry(7, 7, 35, 50);
+  const geometry = new THREE.CylinderGeometry(7, 7, 4, 50);
   //const material = new THREE.MeshLambertMaterial({ color: 0x333333 });
   const materials = [
     new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/wheel_side.jpg'), side: THREE.DoubleSide}),
@@ -89,32 +94,76 @@ function createWheels() {
 function createCar() {
   const car = new THREE.Group();
   
-  const backWheel = createWheels();
-  backWheel.position.y = 6;
-  backWheel.position.x = -18;
-  backWheel.rotation.x = 1.57;
-  car.add(backWheel);
+  const rearRightWheel = createWheels();
+  rearRightWheel.position.y = 6;
+  rearRightWheel.position.x = -18;
+  rearRightWheel.position.z = 15;
+  rearRightWheel.rotation.x = 1.57;
+  car.add(rearRightWheel);
   
-  const frontWheel = createWheels();
-  frontWheel.position.y = 6;  
-  frontWheel.position.x = 18;
-  frontWheel.rotation.x = 1.57;
-  car.add(frontWheel);
+  const frontRightWheel = createWheels();
+  frontRightWheel.position.y = 6;  
+  frontRightWheel.position.x = 18;
+  frontRightWheel.position.z = 15;
+  frontRightWheel.rotation.x = 1.57;
+  car.add(frontRightWheel);
+
+  const rearLeftWheel = createWheels();
+  rearLeftWheel.position.y = 6;  
+  rearLeftWheel.position.x = -18;
+  rearLeftWheel.position.z = -15;
+  rearLeftWheel.rotation.x = 1.57;
+  car.add(rearLeftWheel);
+
+  const frontLeftWheel = createWheels();
+  frontLeftWheel.position.y = 6;  
+  frontLeftWheel.position.x = 18;
+  frontLeftWheel.position.z = -15;
+  frontLeftWheel.rotation.x = 1.57;
+  car.add(frontLeftWheel);
 
 
-var speed = 0.1
+  const extraWheel = createWheels();
+  extraWheel.position.y = 20;  
+  extraWheel.position.x = -32;
+  extraWheel.position.z = -5;
+  extraWheel.rotation.z = 1.57;
+  car.add(extraWheel);
+
 var flag;
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
+
+    var speed = 0.1
+
     var keyCode = event.which
+    
     if (keyCode == 87) {
-      frontWheel.rotation.y -= speed
-      backWheel.rotation.y -= speed
+      frontRightWheel.rotation.y -= speed
+      rearRightWheel.rotation.y -= speed
+      rearLeftWheel.rotation.y -= speed
+      frontLeftWheel.rotation.y -= speed
     } else if (keyCode == 83) {
-      frontWheel.rotation.y += speed
-      backWheel.rotation.y += speed
+      frontRightWheel.rotation.y += speed
+      rearRightWheel.rotation.y += speed
+      rearLeftWheel.rotation.y += speed
+      frontLeftWheel.rotation.y += speed
+    }else if(keyCode == 65){
+      
+      if(frontRightWheel.rotation.z < 0.3){
+        frontRightWheel.rotation.z += speed
+        frontLeftWheel.rotation.z += speed
+      }
+
+    }else if(keyCode == 68){
+      if(frontRightWheel.rotation.z > -0.3){
+        frontRightWheel.rotation.z -= speed
+        frontLeftWheel.rotation.z -= speed
+      }
+      
     }
+    
 
     if(keyCode == 32)
     {
@@ -150,16 +199,16 @@ function onDocumentKeyDown(event) {
 
   const main = new THREE.Mesh(
     new THREE.BoxBufferGeometry(60, 15, 30),
-    new THREE.MeshLambertMaterial({ color: 0x78b14b })
+    new THREE.MeshLambertMaterial({ color: 0xA91B0D })
   );
   main.position.y = 12;
   car.add(main);
 
   const cabin = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(33, 12, 24),
+    new THREE.BoxBufferGeometry(40, 12, 30),
     new THREE.MeshLambertMaterial({ color: 0xffffff })
   );
-  cabin.position.x = -6;
+  cabin.position.x = -10;
   cabin.position.y = 25.5;
   car.add(cabin);
 
@@ -236,6 +285,9 @@ camera.position.set(400, 200, 500)
 camera.up.set(0,1,0);
 camera.lookAt(0, 0, 0);
 scene.add(camera)
+
+const textture_background = new THREE.TextureLoader().load('/textures/background_2.jpg')
+scene.background = textture_background
 
 
 
