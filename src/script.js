@@ -76,7 +76,7 @@ const floor = createFloor();
 scene.add(floor)
 
 
-function createWheels() {
+function createWheels(w, x, y, z) {
   const geometry = new THREE.CylinderGeometry(7, 7, 4, 50);
   //const material = new THREE.MeshLambertMaterial({ color: 0x333333 });
   const materials = [
@@ -86,47 +86,70 @@ function createWheels() {
   ]    
   const wheel = new THREE.Mesh(geometry, materials);
   wheel.castShadow = true;
+  wheel.position.y = w;
+  wheel.position.x = x;
+  wheel.position.z = y;
+  wheel.rotation.x = z;
   return wheel;
 }
 
+
+function createHeadLight(w, x, y, z) {
+  const geometry = new THREE.CylinderGeometry(3, 3, 2, 50);
+  const materials = [
+    new THREE.MeshBasicMaterial( { color: 0x606060 } ),
+    new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/light1.png'), side: THREE.DoubleSide}),
+    new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('/textures/light1.png'), side: THREE.DoubleSide}),
+  ]    
+  const headLight = new THREE.Mesh(geometry, materials);
+  headLight.castShadow = true;
+  headLight.position.x = w
+  headLight.position.y = x
+  headLight.position.z = y
+  headLight.rotation.z = z 
+  return headLight;
+}
+
+function createLookingGlass( x, y, z, n) {
+
+  var cubeMaterialArray = [];
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x000000 } ) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial(  {map: new THREE.TextureLoader().load('/textures/winshield.png'), side: THREE.FrontSide}) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x000000 } ) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x000000 } ));
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x000000 } ));
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x000000 } ) );  
+  var cubeMaterials = new THREE.MeshFaceMaterial( cubeMaterialArray );
+  
+  const geometry = new THREE.BoxBufferGeometry(3, 3, 3);
+  const lookingGlass = new THREE.Mesh(geometry, cubeMaterials);
+  lookingGlass.castShadow = true;
+  lookingGlass.position.x = x
+  lookingGlass.position.y = y
+  lookingGlass.position.z = z
+  return lookingGlass;
+}
 
 
 function createCar() {
   const car = new THREE.Group();
   
-  const rearRightWheel = createWheels();
-  rearRightWheel.position.y = 6;
-  rearRightWheel.position.x = -18;
-  rearRightWheel.position.z = 15;
-  rearRightWheel.rotation.x = 1.57;
+  const rearRightWheel = createWheels(6, -18, 15, 1.57);
   car.add(rearRightWheel);
   
-  const frontRightWheel = createWheels();
-  frontRightWheel.position.y = 6;  
-  frontRightWheel.position.x = 18;
-  frontRightWheel.position.z = 15;
-  frontRightWheel.rotation.x = 1.57;
+  const frontRightWheel = createWheels(6, 18, 15, 1.57);
   car.add(frontRightWheel);
+  gui.add(frontRightWheel.rotation,'x',-50,50,0.01)  
+  gui.add(frontRightWheel.rotation,'y',-50,50,0.01)  
+  gui.add(frontRightWheel.rotation,'z',-50,50,0.01) 
 
-  const rearLeftWheel = createWheels();
-  rearLeftWheel.position.y = 6;  
-  rearLeftWheel.position.x = -18;
-  rearLeftWheel.position.z = -15;
-  rearLeftWheel.rotation.x = 1.57;
+  const rearLeftWheel = createWheels(6, -18, -15, 1.57);
   car.add(rearLeftWheel);
 
-  const frontLeftWheel = createWheels();
-  frontLeftWheel.position.y = 6;  
-  frontLeftWheel.position.x = 18;
-  frontLeftWheel.position.z = -15;
-  frontLeftWheel.rotation.x = 1.57;
+  const frontLeftWheel = createWheels(6, 18, -15, 1.57);
   car.add(frontLeftWheel);
 
-
-  const extraWheel = createWheels();
-  extraWheel.position.y = 20;  
-  extraWheel.position.x = -32;
-  extraWheel.position.z = -5;
+  const extraWheel = createWheels(20, -32, -5, 1.57);
   extraWheel.rotation.z = 1.57;
   car.add(extraWheel);
 
@@ -138,7 +161,7 @@ function onDocumentKeyDown(event) {
     var speed = 0.1
 
     var keyCode = event.which
-    
+  
     if (keyCode == 87) {
       frontRightWheel.rotation.y -= speed
       rearRightWheel.rotation.y -= speed
@@ -164,10 +187,10 @@ function onDocumentKeyDown(event) {
       
     }
     
+    
 
     if(keyCode == 32)
     {
-      console.log('space here')
       
  
       if(lightX == 300 && lightZ == 300)
@@ -195,22 +218,44 @@ function onDocumentKeyDown(event) {
     }
   };
 
-
+ 
 
   const main = new THREE.Mesh(
     new THREE.BoxBufferGeometry(60, 15, 30),
-    new THREE.MeshLambertMaterial({ color: 0xA91B0D })
+    new THREE.MeshLambertMaterial({ color: 0x900D09 })
   );
+  //0x900603
   main.position.y = 12;
   car.add(main);
 
+  var cubeMaterialArray = [];
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( {map: new THREE.TextureLoader().load('/textures/winshield.png'), side: THREE.FrontSide}) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial({map: new THREE.TextureLoader().load('/textures/winshield.png'), side: THREE.FrontSide}) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( { color: 0x900D09 } ) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( {map: new THREE.TextureLoader().load('/textures/winshield.png'), side: THREE.FrontSide}) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( {map: new THREE.TextureLoader().load('/textures/winshield_side.png'), side: THREE.FrontSide}) );
+  cubeMaterialArray.push( new THREE.MeshLambertMaterial( {map: new THREE.TextureLoader().load('/textures/winshield_side.png'), side: THREE.FrontSide}) );
+  var cubeMaterials = new THREE.MeshFaceMaterial( cubeMaterialArray );
+
   const cabin = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(40, 12, 30),
-    new THREE.MeshLambertMaterial({ color: 0xffffff })
+    new THREE.BoxBufferGeometry(40, 12, 30),    
+    cubeMaterials
   );
   cabin.position.x = -10;
   cabin.position.y = 25.5;
   car.add(cabin);
+
+  const headLight = createHeadLight(29.99, 14.81, -9.03, 1.57);
+  car.add(headLight);
+
+  const headLight_2 = createHeadLight(29.99, 14.81, 7.23, 1.57);
+  car.add(headLight_2)
+
+  const lookingGlassLeft = createLookingGlass(8.61, 21.04, 16.5,1)
+  car.add(lookingGlassLeft)
+    
+  const lookingGlassLeft_2 = createLookingGlass(8.61, 21.04, -16.5,1)
+  car.add(lookingGlassLeft_2)
 
   return car;
 }
@@ -249,10 +294,10 @@ var lightShift = 10
 }
 
 //light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(lightX, lightY, lightZ);
 directionalLight.castShadow = true;
 
@@ -260,9 +305,9 @@ directionalLight.shadow.mapSize.width = 1024
 directionalLight.shadow.mapSize.height = 1024
 scene.add(directionalLight); 
 
-gui.add(directionalLight.position,'x',-300,300,0.01);
-gui.add(directionalLight.position,'y',-600,600,0.01);
-gui.add(directionalLight.position,'z',-1400,1400,0.01);
+//gui.add(directionalLight.position,'x',-300,300,0.01);
+//gui.add(directionalLight.position,'y',-600,600,0.01);
+//gui.add(directionalLight.position,'z',-1400,1400,0.01);
 
 
 // Camera
